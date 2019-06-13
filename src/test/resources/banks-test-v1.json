@@ -1,22 +1,10 @@
 {
 	"banks":[
 		{
-			"bic":"1234",
-			"name":"Royal Bank of Boredom",
+			"bic":"111",
+			"name":"dummy",
 			"countryCode":"GB",
 			"auth":"OAUTH"
-		},
-		{
-			"bic":"5678",
-			"name":"Credit Sweets",
-			"countryCode":"CH",
-			"auth":"OpenID"
-		},
-		{
-			"bic":"9870",
-			"name":"Banco de espiritu santo",
-			"countryCode":"PT",
-			"auth":"SSL"
 		}
 	]
 }

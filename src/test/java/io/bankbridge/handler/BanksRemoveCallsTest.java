@@ -8,7 +8,7 @@ public class BanksRemoveCallsTest {
 
     @Test
     public void thatHandleThrowsRuntimeException() {
-        assertThrows(RuntimeException.class, () -> BanksRemoteCalls.handle(null, null));
+        assertThrows(RuntimeException.class, () -> new BanksRemoteCalls().handle(null, null));
     }
 
 }

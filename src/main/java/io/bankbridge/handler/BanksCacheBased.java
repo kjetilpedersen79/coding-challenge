@@ -18,25 +18,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BanksCacheBased {
-    private static CacheManager cacheManager; // can be private
+// avoids static methods, a static cache manager could be difficult to control - BanksCacheBased can be a global resource if needed
+public class BanksCacheBased implements BanksCallable {
+    private CacheManager cacheManager; // can be private
 
-    public static void init() throws IOException { // replaced catch and throw Exception with more accurate exception
+    // splits init cacheManager from data load
+    public BanksCacheBased() {
         cacheManager = CacheManagerBuilder
                 .newCacheManagerBuilder().withCache("banks", CacheConfigurationBuilder
                         .newCacheConfigurationBuilder(String.class, String.class, ResourcePoolsBuilder.heap(10)))
                 .build();
         cacheManager.init();
-        /* model.bic and model.name are Strings, can use generics instead of unchecked cast */
+    }
+
+    // load from default file
+    @Override
+    public void init() throws IOException { // replaced catch and throw Exception with more accurate exception
+        init("banks-v1.json");
+    }
+
+    // load from specific resource file
+    public void init(String resource) throws IOException {
+        // model.bic and model.name are Strings, can use generics instead of unchecked cast
         Cache<String, String> cache = cacheManager.getCache("banks", String.class, String.class);
         BankModelList models = new ObjectMapper().readValue(
-                Thread.currentThread().getContextClassLoader().getResource("banks-v1.json"), BankModelList.class);
+                Thread.currentThread().getContextClassLoader().getResource(resource), BankModelList.class);
         for (BankModel model : models.banks) {
             cache.put(model.bic, model.name);
         }
     }
 
-    public static String handle(Request request, Response response) {
+    @Override
+    public String handle(Request request, Response response) {
         List<Map> result = new ArrayList<>();
         cacheManager.getCache("banks", String.class, String.class).forEach(entry -> {
             /* use generics instead of unchecked cast */
@@ -50,7 +63,15 @@ public class BanksCacheBased {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error while processing request");
         }
+    }
 
+    // only expose the cache and not cache manager to avoid illegal manipulation
+    public Cache<String, String> getCache() {
+        return cacheManager.getCache("banks", String.class, String.class);
+    }
+
+    public void close() {
+        cacheManager.close();
     }
 
 }
