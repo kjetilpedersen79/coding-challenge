@@ -7,14 +7,13 @@ import spark.Response;
 import java.io.IOException;
 import java.util.Map;
 
-public class BanksRemoteCalls implements BanksCallable {
+public class BanksRemoteCalls implements BanksLookup {
 
     private Map config;
 
     @Override
     public void init() throws IOException {
-        config = new ObjectMapper()
-                .readValue(Thread.currentThread().getContextClassLoader().getResource("banks-v2.json"), Map.class);
+        config = new ObjectMapper().readValue(Thread.currentThread().getContextClassLoader().getResource("banks-v2.json"), Map.class);
     }
 
     @Override

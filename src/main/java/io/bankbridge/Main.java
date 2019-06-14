@@ -1,7 +1,7 @@
 package io.bankbridge;
 
 import io.bankbridge.handler.BanksCacheBased;
-import io.bankbridge.handler.BanksCallable;
+import io.bankbridge.handler.BanksLookup;
 import io.bankbridge.handler.BanksRemoteCalls;
 
 import java.io.IOException;
@@ -13,11 +13,11 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         port(8080);
-        callBank("/v1/banks/all", new BanksCacheBased());
-        callBank("/v2/banks/all", new BanksRemoteCalls());
+        getBanks("/v1/banks/all", new BanksCacheBased());
+        getBanks("/v2/banks/all", new BanksRemoteCalls());
     }
 
-    private static void callBank(String path, BanksCallable banksCallable) throws IOException {
+    private static void getBanks(String path, BanksLookup banksCallable) throws IOException {
         banksCallable.init();
         get(path, banksCallable::handle); // simplify call
     }
