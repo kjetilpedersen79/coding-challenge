@@ -18,8 +18,12 @@ public class MockRemotes {
                 "\"countryCode\":\"CH\",\n" +
                 "\"auth\":\"OpenID\"\n" +
                 "}");
+        /*
+         The last bank doesn't contain a bic, only the name - intentional or not?
+         Setting correct bic according to README api description
+          */
         get("/bes", (request, response) -> "{\n" +
-                "\"name\":\"Banco de espiritu santo\",\n" +
+                "\"bic\":\"9870\",\n" +
                 "\"countryCode\":\"PT\",\n" +
                 "\"auth\":\"SSL\"\n" +
                 "}");

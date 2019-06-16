@@ -1,5 +1,6 @@
 package io.bankbridge.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ehcache.Cache;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,10 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import spark.Request;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import static io.bankbridge.handler.SparkHandler.ID;
 import static io.bankbridge.handler.SparkHandler.NAME;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class BanksCacheBasedTest {
@@ -19,7 +23,7 @@ public class BanksCacheBasedTest {
     private Request request;
 
     @BeforeEach
-    public void beforeAll() {
+    public void beforeEach() {
         banksCacheBased = new BanksCacheBased();
         request = Mockito.mock(Request.class);
     }
@@ -35,7 +39,7 @@ public class BanksCacheBasedTest {
     public void thatHandleReturnsNameAndIdForBanksInCache() throws Exception {
         banksCacheBased.init();
         String output = banksCacheBased.handle(request, null);
-        assertEqualsAll(output);
+        assertAllBanks(output);
     }
 
     @Test
@@ -48,7 +52,7 @@ public class BanksCacheBasedTest {
     public void thatHandleReturnsOneBank() throws Exception {
         banksCacheBased.init("banks-test-v1.json");
         String output = banksCacheBased.handle(request, null);
-        assertEquals("[{\"name\":\"dummy\",\"id\":\"111\"}]", output);
+        assertBanks(output, new Bank("111", "dummy"));
     }
 
     @Test
@@ -56,7 +60,7 @@ public class BanksCacheBasedTest {
         banksCacheBased.init();
         when(request.queryParams(ID)).thenReturn("5678");
         String output = banksCacheBased.handle(request, null);
-        assertEqualsCreditSweets(output);
+        assertBanks(output, new Bank("5678", "Credit Sweets"));
     }
 
     @Test
@@ -72,7 +76,7 @@ public class BanksCacheBasedTest {
         banksCacheBased.init();
         when(request.queryParams(NAME)).thenReturn("e");
         String output = banksCacheBased.handle(request, null);
-        assertEqualsAll(output);
+        assertAllBanks(output);
     }
 
     @Test
@@ -80,7 +84,7 @@ public class BanksCacheBasedTest {
         banksCacheBased.init();
         when(request.queryParams(NAME)).thenReturn("s");
         String output = banksCacheBased.handle(request, null);
-        assertEquals("[{\"name\":\"Credit Sweets\",\"id\":\"5678\"},{\"name\":\"Banco de espiritu santo\",\"id\":\"9870\"}]", output);
+        assertBanks(output, new Bank("5678", "Credit Sweets"), new Bank("9870", "Banco de espiritu santo"));
     }
 
     @Test
@@ -88,7 +92,7 @@ public class BanksCacheBasedTest {
         banksCacheBased.init();
         when(request.queryParams(NAME)).thenReturn("Sweets");
         String output = banksCacheBased.handle(request, null);
-        assertEqualsCreditSweets(output);
+        assertBanks(output, new Bank("5678", "Credit Sweets"));
     }
 
     @Test
@@ -96,7 +100,7 @@ public class BanksCacheBasedTest {
         banksCacheBased.init();
         when(request.queryParams(NAME)).thenReturn("SWEETS");
         String output = banksCacheBased.handle(request, null);
-        assertEqualsCreditSweets(output);
+        assertBanks(output, new Bank("5678", "Credit Sweets"));
     }
 
     @Test
@@ -112,11 +116,43 @@ public class BanksCacheBasedTest {
         banksCacheBased.close();
     }
 
-    private void assertEqualsCreditSweets(String output) {
-        assertEquals("[{\"name\":\"Credit Sweets\",\"id\":\"5678\"}]", output);
+    private void assertAllBanks(String output) throws IOException {
+        assertBanks(output,
+                new Bank("1234", "Royal Bank of Boredom"),
+                new Bank("5678", "Credit Sweets"),
+                new Bank("9870", "Banco de espiritu santo")
+        );
     }
 
-    private void assertEqualsAll(String output) {
-        assertEquals("[{\"name\":\"Credit Sweets\",\"id\":\"5678\"},{\"name\":\"Banco de espiritu santo\",\"id\":\"9870\"},{\"name\":\"Royal Bank of Boredom\",\"id\":\"1234\"}]", output);
+    private void assertBanks(String output, Bank... expectedBanks) throws IOException {
+        BankList banks = new ObjectMapper().readValue("{\"banks\":" + output + "}", BankList.class);
+        assertEquals(expectedBanks.length, banks.banks.size());
+        for (Bank expectedBank : expectedBanks) {
+            assertTrue(containsBank(banks, expectedBank));
+        }
+    }
+
+    private boolean containsBank(BankList banks, Bank expectedBank) {
+        for (Bank bank : banks.banks) {
+            if (expectedBank.id.equals(bank.id) && expectedBank.name.equals(bank.name)) return true;
+        }
+        return false;
+    }
+
+    private static class BankList {
+        public List<Bank> banks = new ArrayList<>();
+    }
+
+    private static class Bank {
+        public String id;
+        public String name;
+
+        public Bank() {
+        }
+
+        public Bank(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
     }
 }

@@ -43,8 +43,7 @@ public class BanksCacheBased implements SparkHandler {
     public void init(String resource) throws IOException {
         // model.bic and model.name are Strings, can use generics instead of unchecked cast
         Cache<String, String> cache = cacheManager.getCache(cacheName, String.class, String.class);
-        BankModelList models = new ObjectMapper().readValue(
-                Thread.currentThread().getContextClassLoader().getResource(resource), BankModelList.class);
+        BankModelList models = new ObjectMapper().readValue(Thread.currentThread().getContextClassLoader().getResource(resource), BankModelList.class);
         for (BankModel model : models.banks) {
             cache.put(model.bic, model.name);
         }
