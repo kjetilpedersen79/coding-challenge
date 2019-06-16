@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BanksRemoteCalls extends BankLookup {
+public class BanksRemoteCalls extends BanksLookup {
 
     private Map<String, String> config;
     private CloseableHttpClient httpClient;

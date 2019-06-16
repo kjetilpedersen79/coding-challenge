@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BankLookup implements SparkHandler {
+public abstract class BanksLookup implements SparkHandler {
 
     public static String ID = "id";
     public static String NAME = "name";

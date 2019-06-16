@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.bankbridge.handler.BankLookup.ID;
-import static io.bankbridge.handler.BankLookup.NAME;
+import static io.bankbridge.handler.BanksLookup.ID;
+import static io.bankbridge.handler.BanksLookup.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
