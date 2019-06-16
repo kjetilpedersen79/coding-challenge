@@ -1,12 +1,12 @@
 package io.bankbridge.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.bankbridge.to.Bank;
-import io.bankbridge.to.BankList;
 import org.junit.jupiter.api.Test;
 import spark.Request;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.bankbridge.handler.SparkHandler.ID;
 import static io.bankbridge.handler.SparkHandler.NAME;
@@ -99,4 +99,20 @@ public abstract class BanksLookupTest<T extends SparkHandler> {
         return false;
     }
 
+    protected static class Bank {
+        public String id;
+        public String name;
+
+        public Bank() {
+        }
+
+        public Bank(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
+
+    protected static class BankList {
+        public List<Bank> banks = new ArrayList<>();
+    }
 }

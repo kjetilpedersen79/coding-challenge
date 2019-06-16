@@ -1,6 +1,5 @@
 package io.bankbridge.handler;
 
-import io.bankbridge.to.Bank;
 import org.ehcache.Cache;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
