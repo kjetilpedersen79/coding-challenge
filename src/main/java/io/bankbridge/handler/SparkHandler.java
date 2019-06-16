@@ -8,9 +8,6 @@ import java.io.IOException;
 // generic interface to make it easy to switch between cache and remote
 public interface SparkHandler {
 
-    String ID = "id";
-    String NAME = "name";
-
     void init() throws IOException;
 
     String handle(Request request, Response response);

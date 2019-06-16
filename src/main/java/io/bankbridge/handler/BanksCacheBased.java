@@ -1,26 +1,20 @@
 package io.bankbridge.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.bankbridge.model.BankModel;
 import io.bankbridge.model.BankModelList;
-import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
-import spark.Request;
-import spark.Response;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 // avoids static methods, a static cache manager could be difficult to control - BanksCacheBased can be a global resource if needed
-public class BanksCacheBased implements SparkHandler {
+public class BanksCacheBased extends BankLookup {
     private final String cacheName = "banks";
     private CacheManager cacheManager; // can be private
 
@@ -49,37 +43,6 @@ public class BanksCacheBased implements SparkHandler {
         }
     }
 
-    @Override
-    public String handle(Request request, Response response) {
-        List<Map> result = new ArrayList<>();
-        cacheManager.getCache(cacheName, String.class, String.class).forEach(bank -> {
-            // added query with param functionality
-            boolean match = true;
-            if (paramAndNoMatch(request.queryParams(ID), bank.getKey())) match = false;
-            if (notContains(request.queryParams(NAME), bank.getValue())) match = false;
-            if (match) {
-                /* use generics instead of unchecked cast */
-                Map<String, String> map = new HashMap<>();
-                map.put("id", bank.getKey());
-                map.put("name", bank.getValue());
-                result.add(map);
-            }
-        });
-        try {
-            return new ObjectMapper().writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error while processing request");
-        }
-    }
-
-    private boolean notContains(String param, String value) {
-        return param != null && !StringUtils.containsIgnoreCase(value, param);
-    }
-
-    private boolean paramAndNoMatch(String param, Object value) {
-        return param != null && !value.equals(param);
-    }
-
     // only expose the cache and not cache manager to avoid illegal manipulation
     public Cache<String, String> getCache() {
         return cacheManager.getCache(cacheName, String.class, String.class);
@@ -89,4 +52,12 @@ public class BanksCacheBased implements SparkHandler {
         cacheManager.close();
     }
 
+    @Override
+    protected Map<String, String> getBanks() {
+        Map<String, String> banks = new HashMap<>();
+        cacheManager.getCache(cacheName, String.class, String.class).forEach(bank -> {
+            banks.put(bank.getKey(), bank.getValue());
+        });
+        return banks;
+    }
 }
