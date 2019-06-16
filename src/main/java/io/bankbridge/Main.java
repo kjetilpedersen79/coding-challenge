@@ -12,7 +12,7 @@ import static spark.Spark.port;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        port(8080);
+        port(getPort());
         addHandler("/v1/banks/all", new BanksCacheBased());
         addHandler("/v2/banks/all", new BanksRemoteCalls());
     }
@@ -23,5 +23,13 @@ public class Main {
     private static void addHandler(String path, SparkHandler sparkHandler) throws IOException {
         sparkHandler.init();
         get(path, sparkHandler::handle);
+    }
+
+    static int getPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 8080; //return default port if heroku-port isn't set (i.e. on localhost)
     }
 }

@@ -23,7 +23,7 @@ public class MockRemotes {
          Setting correct bic so that the Mock response matches the README api description
           */
         get("/bes", (request, response) -> "{\n" +
-                "\"bic\":\"9870\",\n" +
+                "\"name\":\"Banco de espiritu santo\",\n" +
                 "\"countryCode\":\"PT\",\n" +
                 "\"auth\":\"SSL\"\n" +
                 "}");
