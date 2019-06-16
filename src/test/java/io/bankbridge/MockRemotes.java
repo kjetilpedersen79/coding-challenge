@@ -20,7 +20,7 @@ public class MockRemotes {
                 "}");
         /*
          The last bank doesn't contain a bic, only the name - intentional or not?
-         Setting correct bic according to README api description
+         Setting correct bic so that the Mock response matches the README api description
           */
         get("/bes", (request, response) -> "{\n" +
                 "\"bic\":\"9870\",\n" +

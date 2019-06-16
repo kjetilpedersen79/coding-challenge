@@ -1,54 +1,70 @@
 package io.bankbridge.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ehcache.Cache;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import spark.Request;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.bankbridge.handler.SparkHandler.ID;
 import static io.bankbridge.handler.SparkHandler.NAME;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-public class BanksCacheBasedTest extends BanksLookupTest<BanksCacheBased> {
+public abstract class BanksLookupTest<T extends SparkHandler> {
 
-    @BeforeEach
-    public void beforeEach() {
-        banksLookup = new BanksCacheBased();
-        request = Mockito.mock(Request.class);
-    }
+    protected T banksLookup;
+    protected Request request;
 
     @Test
-    public void thatInitCreatesBanksCache() throws Exception {
+    public void thatId5678ReturnsCreditSweets() throws Exception {
         banksLookup.init();
-        Cache<String, String> cache = banksLookup.getCache();
-        assertNotNull(cache);
-    }
-
-    @Test
-    public void thatHandleReturnsNameAndIdForBanksInCache() throws Exception {
-        banksLookup.init();
+        when(request.queryParams(ID)).thenReturn("5678");
         String output = banksLookup.handle(request, null);
-        assertAllBanks(output);
+        assertBanks(output, new Bank("5678", "Credit Sweets"));
     }
 
     @Test
-    public void thatHandleReturnsEmptyOnEmptyCache() throws Exception {
+    public void thatId0ReturnsEmpty() throws Exception {
+        banksLookup.init();
+        when(request.queryParams(ID)).thenReturn("0");
         String output = banksLookup.handle(request, null);
         assertEquals("[]", output);
     }
 
     @Test
-    public void thatHandleReturnsOneBank() throws Exception {
-        banksLookup.init("banks-test-v1.json");
+    public void thatNameEreturnsAll() throws Exception {
+        banksLookup.init();
+        when(request.queryParams(NAME)).thenReturn("e");
         String output = banksLookup.handle(request, null);
-        assertBanks(output, new Bank("111", "dummy"));
+        assertAllBanks(output);
+    }
+
+    @Test
+    public void thatNameSreturnsCreditSweetsAndBanco() throws Exception {
+        banksLookup.init();
+        when(request.queryParams(NAME)).thenReturn("s");
+        String output = banksLookup.handle(request, null);
+        assertBanks(output, new Bank("5678", "Credit Sweets"), new Bank("9870", "Banco de espiritu santo"));
+    }
+
+    @Test
+    public void thatNameSweetsReturnsCreditSweets() throws Exception {
+        banksLookup.init();
+        when(request.queryParams(NAME)).thenReturn("Sweets");
+        String output = banksLookup.handle(request, null);
+        assertBanks(output, new Bank("5678", "Credit Sweets"));
+    }
+
+    @Test
+    public void thatNameSWEETSreturnsCreditSweets() throws Exception {
+        banksLookup.init();
+        when(request.queryParams(NAME)).thenReturn("SWEETS");
+        String output = banksLookup.handle(request, null);
+        assertBanks(output, new Bank("5678", "Credit Sweets"));
     }
 
     @Test
@@ -57,11 +73,6 @@ public class BanksCacheBasedTest extends BanksLookupTest<BanksCacheBased> {
         when(request.queryParams(NAME)).thenReturn("dummy");
         String output = banksLookup.handle(request, null);
         assertEquals("[]", output);
-    }
-
-    @AfterEach
-    public void afterEach() {
-        banksLookup.close();
     }
 
     private void assertAllBanks(String output) throws IOException {
@@ -87,11 +98,11 @@ public class BanksCacheBasedTest extends BanksLookupTest<BanksCacheBased> {
         return false;
     }
 
-    private static class BankList {
+    protected static class BankList {
         public List<Bank> banks = new ArrayList<>();
     }
 
-    private static class Bank {
+    protected static class Bank {
         public String id;
         public String name;
 
@@ -103,4 +114,5 @@ public class BanksCacheBasedTest extends BanksLookupTest<BanksCacheBased> {
             this.name = name;
         }
     }
+
 }
