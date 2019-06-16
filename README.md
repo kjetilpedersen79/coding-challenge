@@ -1,3 +1,5 @@
+https://github.com/kjetilpedersen79/coding-challenge/wiki
+
 # Fintech Innovation Coding Test
 
 ## Checking out the code:
