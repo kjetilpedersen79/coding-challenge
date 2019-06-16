@@ -1,5 +1,5 @@
 {
-	"Royal Bank of Boredom":"http://localhost:1234/rbb",
-	"Credit Sweets":"http://localhost:1234/cs",
-	"Banco de espiritu santo":"http://localhost:1234/bes"
+	"Royal Bank of Boredom":"https://banklookupremote.herokuapp.com/rbb",
+	"Credit Sweets":"https://banklookupremote.herokuapp.com/cs",
+	"Banco de espiritu santo":"https://banklookupremote.herokuapp.com/bes"
 }

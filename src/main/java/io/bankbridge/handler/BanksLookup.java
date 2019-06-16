@@ -46,6 +46,6 @@ public abstract class BanksLookup implements SparkHandler {
     }
 
     private boolean paramAndNoMatch(String param, Object value) {
-        return param != null && !value.equals(param);
+        return param != null && !param.equals(value);
     }
 }

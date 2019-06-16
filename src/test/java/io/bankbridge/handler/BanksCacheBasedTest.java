@@ -41,13 +41,6 @@ public class BanksCacheBasedTest extends BanksLookupTest<BanksCacheBased> {
     }
 
     @Test
-    public void thatHandleReturnsOneBank() throws Exception {
-        banksLookup.init("banks-test-v1.json");
-        String output = banksLookup.handle(request, null);
-        assertBanks(output, new Bank("111", "dummy"));
-    }
-
-    @Test
     public void thatNameDummyReturnsEmpty() throws Exception {
         banksLookup.init();
         when(request.queryParams(NAME)).thenReturn("dummy");
