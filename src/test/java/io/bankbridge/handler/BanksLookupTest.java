@@ -1,12 +1,12 @@
 package io.bankbridge.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.bankbridge.to.Bank;
+import io.bankbridge.to.BankList;
 import org.junit.jupiter.api.Test;
 import spark.Request;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static io.bankbridge.handler.SparkHandler.ID;
 import static io.bankbridge.handler.SparkHandler.NAME;
@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+//assuming that v1 and mock of v2 are meant to be functionally equivalent we can use the same test conditions for both
 public abstract class BanksLookupTest<T extends SparkHandler> {
 
     protected T banksLookup;
@@ -75,7 +76,7 @@ public abstract class BanksLookupTest<T extends SparkHandler> {
         assertEquals("[]", output);
     }
 
-    private void assertAllBanks(String output) throws IOException {
+    protected void assertAllBanks(String output) throws IOException {
         assertBanks(output,
                 new Bank("1234", "Royal Bank of Boredom"),
                 new Bank("5678", "Credit Sweets"),
@@ -83,7 +84,7 @@ public abstract class BanksLookupTest<T extends SparkHandler> {
         );
     }
 
-    private void assertBanks(String output, Bank... expectedBanks) throws IOException {
+    protected void assertBanks(String output, Bank... expectedBanks) throws IOException {
         BankList banks = new ObjectMapper().readValue("{\"banks\":" + output + "}", BankList.class);
         assertEquals(expectedBanks.length, banks.banks.size());
         for (Bank expectedBank : expectedBanks) {
@@ -91,28 +92,11 @@ public abstract class BanksLookupTest<T extends SparkHandler> {
         }
     }
 
-    private boolean containsBank(BankList banks, Bank expectedBank) {
+    protected boolean containsBank(BankList banks, Bank expectedBank) {
         for (Bank bank : banks.banks) {
             if (expectedBank.id.equals(bank.id) && expectedBank.name.equals(bank.name)) return true;
         }
         return false;
-    }
-
-    protected static class BankList {
-        public List<Bank> banks = new ArrayList<>();
-    }
-
-    protected static class Bank {
-        public String id;
-        public String name;
-
-        public Bank() {
-        }
-
-        public Bank(String id, String name) {
-            this.id = id;
-            this.name = name;
-        }
     }
 
 }
