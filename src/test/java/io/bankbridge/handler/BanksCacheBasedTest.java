@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import spark.Request;
 
-import static io.bankbridge.handler.BanksLookup.ID;
-import static io.bankbridge.handler.BanksLookup.NAME;
+import static io.bankbridge.handler.SparkHandler.ID;
+import static io.bankbridge.handler.SparkHandler.NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;

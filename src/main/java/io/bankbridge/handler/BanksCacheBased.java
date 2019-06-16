@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 // avoids static methods, a static cache manager could be difficult to control - BanksCacheBased can be a global resource if needed
-public class BanksCacheBased implements BanksLookup {
+public class BanksCacheBased implements SparkHandler {
     private final String cacheName = "banks";
     private CacheManager cacheManager; // can be private
 

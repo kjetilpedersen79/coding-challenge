@@ -1,7 +1,7 @@
 package io.bankbridge;
 
 import io.bankbridge.handler.BanksCacheBased;
-import io.bankbridge.handler.BanksLookup;
+import io.bankbridge.handler.SparkHandler;
 import io.bankbridge.handler.BanksRemoteCalls;
 
 import java.io.IOException;
@@ -17,8 +17,8 @@ public class Main {
         getBanks("/v2/banks/all", new BanksRemoteCalls());
     }
 
-    private static void getBanks(String path, BanksLookup banksCallable) throws IOException {
-        banksCallable.init();
-        get(path, banksCallable::handle); // simplify call
+    private static void getBanks(String path, SparkHandler sparkHandler) throws IOException {
+        sparkHandler.init();
+        get(path, sparkHandler::handle); // simplify call
     }
 }

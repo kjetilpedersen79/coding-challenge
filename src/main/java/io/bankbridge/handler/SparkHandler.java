@@ -6,7 +6,7 @@ import spark.Response;
 import java.io.IOException;
 
 // generic interface to make it easy to switch between cache and remote
-public interface BanksLookup {
+public interface SparkHandler {
 
     String ID = "id";
     String NAME = "name";

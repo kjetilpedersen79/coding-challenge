@@ -7,7 +7,7 @@ import spark.Response;
 import java.io.IOException;
 import java.util.Map;
 
-public class BanksRemoteCalls implements BanksLookup {
+public class BanksRemoteCalls implements SparkHandler {
 
     private Map config;
 
